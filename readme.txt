@@ -1,5 +1,5 @@
-=== Universal Reward Points Ledger ===
-Contributors: odudedevelopers
+=== ODude Reward Point ===
+Contributors: odude, odudedevelopers
 Tags: loyalty, points, rewards, woocommerce, loyalty points, customer loyalty, user rewards
 Requires at least: 5.8
 Tested up to: 7.0
@@ -8,13 +8,13 @@ Requires PHP: 7.4
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-Connect your WordPress site and WooCommerce store to the ODude Reward Point Universal Loyalty Ledger to award and redeem points effortlessly.
+Connect your WordPress site and WooCommerce store to the ODude Reward Point Ledger to award and redeem points.
 
 == Description ==
 
 Want to keep your website visitors coming back and boost your online sales? 
 
-**Universal Reward Points Ledger** is the easiest way to add a powerful, secure loyalty program to your WordPress site and WooCommerce store. By connecting your site to the ODude Reward Point Universal Loyalty Ledger, you can reward your users with points for being active and let customers use those points for discounts when they shop!
+**ODude Reward Point** allows you to add a powerful, secure loyalty program to your WordPress site and WooCommerce store. By connecting your site to the ODude Reward Point Ledger, you can reward your users with points for being active and let customers use those points for discounts when they shop!
 
 Here is why you and your visitors will love it:
 
@@ -47,7 +47,7 @@ Ready to get started? It takes less than 2 minutes:
 
 1. **Upload** the plugin files to your `/wp-content/plugins/` folder, or install it directly through your WordPress admin panel.
 2. **Activate** the plugin.
-3. Click on the new **Universal Reward** menu in your WordPress sidebar.
+3. Click on the new **ODude Reward Point** menu in your WordPress sidebar.
 4. Enter your ODude API Endpoint and Merchant **Secret Key** to connect.
 5. Set how many points users should get, and you're good to go!
 
@@ -58,8 +58,8 @@ No! WooCommerce is completely optional. If you don't have a shop, you can still 
 
 = How do my visitors see their points? =
 You can display their points balance and history anywhere on your site using these simple codes:
-* `[universal_reward_balance]` - Shows their current point balance.
-* `[universal_reward_history]` - Shows a clean list of all the points they have earned and spent.
+* `[odude_reward_point_balance]` - Shows their current point balance.
+* `[odude_reward_point_history]` - Shows a clean list of all the points they have earned and spent.
 
 = Is it fast? =
 Yes! The plugin stores points details locally on your site using smart caching so it doesn't have to talk to the server every time a page loads. Your site stays fast.

@@ -7,7 +7,7 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
 
-class Universal_Reward_WP {
+class ODude_Reward_Point_WP {
 
     public function __construct() {
         // 1. User Registration Hook
@@ -24,10 +24,10 @@ class Universal_Reward_WP {
      * Check if WordPress core rewards are active
      */
     private function is_active() {
-        if ( get_option( 'universal_reward_connection_status' ) !== 'connected' ) {
+        if ( get_option( 'odude_reward_point_connection_status' ) !== 'connected' ) {
             return false;
         }
-        $settings = get_option( 'universal_reward_wp_settings', [] );
+        $settings = get_option( 'odude_reward_point_wp_settings', [] );
         return ( ! empty( $settings['enable_wp_rewards'] ) && $settings['enable_wp_rewards'] === 'yes' );
     }
 
@@ -40,23 +40,23 @@ class Universal_Reward_WP {
             return;
         }
 
-        $api = new Universal_Reward_API_Client();
+        $api = new ODude_Reward_Point_API_Client();
         // Send email and empty phone, amount is 0 since it is flat points, and deserved_point is set
         $response = $api->award_points( $user->user_email, '', 0, $points, $remarks );
 
         if ( ! empty( $response['success'] ) ) {
-            require_once UNIVERSAL_REWARD_PATH . 'includes/class-universal-reward-core.php'; // ensure cache manager is loaded
-            Universal_Reward_Cache_Manager::purge_customer_cache( $user_id );
+            require_once ODUDE_REWARD_POINT_PATH . 'includes/class-odude-reward-point-core.php'; // ensure cache manager is loaded
+            ODude_Reward_Point_Cache_Manager::purge_customer_cache( $user_id );
 
             // Update local user meta cache
             $balance_response = $api->get_customer_balance( $user->user_email );
             if ( ! empty( $balance_response['success'] ) && isset( $balance_response['customer']['points_balance'] ) ) {
-                Universal_Reward_Cache_Manager::update_local_customer_balance(
+                ODude_Reward_Point_Cache_Manager::update_local_customer_balance(
                     $user_id,
                     $balance_response['customer']['points_balance']
                 );
             }
-            Universal_Reward_Cache_Manager::purge_stats_cache();
+            ODude_Reward_Point_Cache_Manager::purge_stats_cache();
         }
     }
 
@@ -68,7 +68,7 @@ class Universal_Reward_WP {
             return;
         }
 
-        $settings = get_option( 'universal_reward_wp_settings', [] );
+        $settings = get_option( 'odude_reward_point_wp_settings', [] );
         if ( empty( $settings['enable_registration'] ) || $settings['enable_registration'] !== 'yes' ) {
             return;
         }
@@ -78,7 +78,7 @@ class Universal_Reward_WP {
             return;
         }
 
-        $remarks = __( 'Account registration reward', 'universal-reward' );
+        $remarks = __( 'Account registration reward', 'odude-reward-point' );
         $this->process_award( $user_id, $points, $remarks );
     }
 
@@ -99,7 +99,7 @@ class Universal_Reward_WP {
             return; // Only reward registered users
         }
 
-        $settings = get_option( 'universal_reward_wp_settings', [] );
+        $settings = get_option( 'odude_reward_point_wp_settings', [] );
         if ( empty( $settings['enable_comment'] ) || $settings['enable_comment'] !== 'yes' ) {
             return;
         }
@@ -136,7 +136,7 @@ class Universal_Reward_WP {
         }
 
         // translators: %d: post ID.
-        $remarks = sprintf( __( 'Reward for comment on post #%d', 'universal-reward' ), $comment->comment_post_ID );
+        $remarks = sprintf( __( 'Reward for comment on post #%d', 'odude-reward-point' ), $comment->comment_post_ID );
         $this->process_award( $user_id, $points, $remarks );
     }
 
@@ -148,7 +148,7 @@ class Universal_Reward_WP {
             return;
         }
 
-        $settings = get_option( 'universal_reward_wp_settings', [] );
+        $settings = get_option( 'odude_reward_point_wp_settings', [] );
         if ( empty( $settings['enable_daily_login'] ) || $settings['enable_daily_login'] !== 'yes' ) {
             return;
         }
@@ -160,16 +160,16 @@ class Universal_Reward_WP {
 
         $user_id = $user->ID;
         $today = gmdate( 'Y-m-d' );
-        $last_login_reward = get_user_meta( $user_id, '_universal_reward_last_login_reward', true );
+        $last_login_reward = get_user_meta( $user_id, '_odude_reward_point_last_login_reward', true );
 
         if ( $last_login_reward === $today ) {
             return; // Already rewarded today
         }
 
         // Store login reward marker first to prevent race condition concurrency issues
-        update_user_meta( $user_id, '_universal_reward_last_login_reward', $today );
+        update_user_meta( $user_id, '_odude_reward_point_last_login_reward', $today );
 
-        $remarks = __( 'Daily login loyalty bonus', 'universal-reward' );
+        $remarks = __( 'Daily login loyalty bonus', 'odude-reward-point' );
         $this->process_award( $user_id, $points, $remarks );
     }
 }

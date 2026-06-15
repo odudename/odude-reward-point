@@ -1,13 +1,13 @@
 <?php
 /**
- * Main Loader & Core Cache Manager for universal-reward
+ * Main Loader & Core Cache Manager for odude-reward-point
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
 
-class Universal_Reward_Core {
+class ODude_Reward_Point_Core {
 
     public function __construct() {
         $this->load_dependencies();
@@ -17,17 +17,17 @@ class Universal_Reward_Core {
      * Include all plugin components
      */
     private function load_dependencies() {
-        require_once UNIVERSAL_REWARD_PATH . 'includes/class-universal-reward-api.php';
-        require_once UNIVERSAL_REWARD_PATH . 'includes/class-universal-reward-webhook.php';
-        require_once UNIVERSAL_REWARD_PATH . 'includes/class-universal-reward-wp.php';
-        require_once UNIVERSAL_REWARD_PATH . 'public/class-universal-reward-public.php';
+        require_once ODUDE_REWARD_POINT_PATH . 'includes/class-odude-reward-point-api.php';
+        require_once ODUDE_REWARD_POINT_PATH . 'includes/class-odude-reward-point-webhook.php';
+        require_once ODUDE_REWARD_POINT_PATH . 'includes/class-odude-reward-point-wp.php';
+        require_once ODUDE_REWARD_POINT_PATH . 'public/class-odude-reward-point-public.php';
 
         if ( class_exists( 'WooCommerce' ) ) {
-            require_once UNIVERSAL_REWARD_PATH . 'includes/class-universal-reward-wc.php';
+            require_once ODUDE_REWARD_POINT_PATH . 'includes/class-odude-reward-point-wc.php';
         }
 
         if ( is_admin() ) {
-            require_once UNIVERSAL_REWARD_PATH . 'admin/class-universal-reward-admin.php';
+            require_once ODUDE_REWARD_POINT_PATH . 'admin/class-odude-reward-point-admin.php';
         }
     }
 
@@ -36,15 +36,15 @@ class Universal_Reward_Core {
      */
     public function run() {
         // Instantiate controllers
-        new Universal_Reward_WP();
-        new Universal_Reward_Public();
+        new ODude_Reward_Point_WP();
+        new ODude_Reward_Point_Public();
 
         if ( class_exists( 'WooCommerce' ) ) {
-            new Universal_Reward_WC();
+            new ODude_Reward_Point_WC();
         }
 
         if ( is_admin() ) {
-            new Universal_Reward_Admin();
+            new ODude_Reward_Point_Admin();
         }
 
         // Scripts enqueuing
@@ -57,12 +57,12 @@ class Universal_Reward_Core {
      */
     public function enqueue_public_assets() {
         // Load only at WooCommerce Checkout page or where shortcode might render
-        wp_enqueue_style( 'universal-reward-public-css', UNIVERSAL_REWARD_URL . 'public/css/public-style.css', [], UNIVERSAL_REWARD_VERSION );
+        wp_enqueue_style( 'odude-reward-point-public-css', ODUDE_REWARD_POINT_URL . 'public/css/public-style.css', [], ODUDE_REWARD_POINT_VERSION );
 
-        wp_enqueue_script( 'universal-reward-public-js', UNIVERSAL_REWARD_URL . 'public/js/public-script.js', [ 'jquery' ], UNIVERSAL_REWARD_VERSION, true );
-        wp_localize_script( 'universal-reward-public-js', 'universal_reward_ajax', [
+        wp_enqueue_script( 'odude-reward-point-public-js', ODUDE_REWARD_POINT_URL . 'public/js/public-script.js', [ 'jquery' ], ODUDE_REWARD_POINT_VERSION, true );
+        wp_localize_script( 'odude-reward-point-public-js', 'odude_reward_point_ajax', [
             'ajax_url' => admin_url( 'admin-ajax.php' ),
-            'nonce'    => wp_create_nonce( 'universal-reward-nonce' ),
+            'nonce'    => wp_create_nonce( 'odude-reward-point-nonce' ),
         ] );
     }
 
@@ -71,16 +71,16 @@ class Universal_Reward_Core {
      */
     public function enqueue_admin_assets( $hook ) {
         // Load only on our specific settings page
-        if ( strpos( $hook, 'universal-reward' ) === false ) {
+        if ( strpos( $hook, 'odude-reward-point' ) === false ) {
             return;
         }
 
-        wp_enqueue_style( 'universal-reward-admin-css', UNIVERSAL_REWARD_URL . 'admin/css/admin-style.css', [], UNIVERSAL_REWARD_VERSION );
+        wp_enqueue_style( 'odude-reward-point-admin-css', ODUDE_REWARD_POINT_URL . 'admin/css/admin-style.css', [], ODUDE_REWARD_POINT_VERSION );
 
-        wp_enqueue_script( 'universal-reward-admin-js', UNIVERSAL_REWARD_URL . 'admin/js/admin-script.js', [ 'jquery' ], UNIVERSAL_REWARD_VERSION, true );
-        wp_localize_script( 'universal-reward-admin-js', 'universal_reward_admin_ajax', [
+        wp_enqueue_script( 'odude-reward-point-admin-js', ODUDE_REWARD_POINT_URL . 'admin/js/admin-script.js', [ 'jquery' ], ODUDE_REWARD_POINT_VERSION, true );
+        wp_localize_script( 'odude-reward-point-admin-js', 'odude_reward_point_admin_ajax', [
             'ajax_url' => admin_url( 'admin-ajax.php' ),
-            'nonce'    => wp_create_nonce( 'universal-reward-admin-nonce' ),
+            'nonce'    => wp_create_nonce( 'odude-reward-point-admin-nonce' ),
         ] );
     }
 }
@@ -89,7 +89,7 @@ class Universal_Reward_Core {
 /**
  * High-performance Cache Manager Class
  */
-class Universal_Reward_Cache_Manager {
+class ODude_Reward_Point_Cache_Manager {
 
     /**
      * Get customer balance with local database fallback (15 min cache)
@@ -99,8 +99,8 @@ class Universal_Reward_Cache_Manager {
             return 0;
         }
 
-        $cached_balance = get_user_meta( $user_id, '_universal_reward_points_balance', true );
-        $last_updated   = get_user_meta( $user_id, '_universal_reward_points_last_updated', true );
+        $cached_balance = get_user_meta( $user_id, '_odude_reward_point_points_balance', true );
+        $last_updated   = get_user_meta( $user_id, '_odude_reward_point_points_last_updated', true );
         $cache_lifespan = 15 * MINUTE_IN_SECONDS;
 
         // Return cached balance if it's fresh
@@ -111,7 +111,7 @@ class Universal_Reward_Cache_Manager {
         // Cache expired or empty -> perform sync
         $user = get_userdata( $user_id );
         if ( $user ) {
-            $api = new Universal_Reward_API_Client();
+            $api = new ODude_Reward_Point_API_Client();
             $response = $api->get_customer_balance( $user->user_email );
 
             if ( ! empty( $response['success'] ) && isset( $response['customer']['points_balance'] ) ) {
@@ -129,8 +129,8 @@ class Universal_Reward_Cache_Manager {
      * Update customer cache directly
      */
     public static function update_local_customer_balance( $user_id, $new_balance ) {
-        update_user_meta( $user_id, '_universal_reward_points_balance', intval( $new_balance ) );
-        update_user_meta( $user_id, '_universal_reward_points_last_updated', time() );
+        update_user_meta( $user_id, '_odude_reward_point_points_balance', intval( $new_balance ) );
+        update_user_meta( $user_id, '_odude_reward_point_points_last_updated', time() );
     }
 
     /**
@@ -140,21 +140,21 @@ class Universal_Reward_Cache_Manager {
         if ( ! $user_id ) {
             return;
         }
-        delete_user_meta( $user_id, '_universal_reward_points_balance' );
-        delete_user_meta( $user_id, '_universal_reward_points_last_updated' );
-        delete_user_meta( $user_id, '_universal_reward_customer_history' );
-        delete_user_meta( $user_id, '_universal_reward_customer_history_updated' );
+        delete_user_meta( $user_id, '_odude_reward_point_points_balance' );
+        delete_user_meta( $user_id, '_odude_reward_point_points_last_updated' );
+        delete_user_meta( $user_id, '_odude_reward_point_customer_history' );
+        delete_user_meta( $user_id, '_odude_reward_point_customer_history_updated' );
     }
 
     /**
      * Get cached admin statistics
      */
     public static function get_cached_admin_stats() {
-        $stats = get_transient( 'universal_reward_admin_stats' );
+        $stats = get_transient( 'odude_reward_point_admin_stats' );
 
         // If transient expired (returns false), pull from API
         if ( false === $stats ) {
-            $api = new Universal_Reward_API_Client();
+            $api = new ODude_Reward_Point_API_Client();
             $response = $api->get_provider_stats();
 
             if ( ! empty( $response['success'] ) && isset( $response['summary'] ) ) {
@@ -165,7 +165,7 @@ class Universal_Reward_Cache_Manager {
                 }
                 
                 // Cache for 12 hours
-                set_transient( 'universal_reward_admin_stats', $stats, 12 * HOUR_IN_SECONDS );
+                set_transient( 'odude_reward_point_admin_stats', $stats, 12 * HOUR_IN_SECONDS );
             } else {
                 $stats = [];
             }
@@ -178,6 +178,6 @@ class Universal_Reward_Cache_Manager {
      * Invalidate admin stats cache to force update on next reload
      */
     public static function purge_stats_cache() {
-        delete_transient( 'universal_reward_admin_stats' );
+        delete_transient( 'odude_reward_point_admin_stats' );
     }
 }

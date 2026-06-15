@@ -1,20 +1,20 @@
 <?php
 /**
- * WooCommerce Webhook Manager for universal-reward
+ * WooCommerce Webhook Manager for odude-reward-point
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
 
-class Universal_Reward_Webhook_Manager {
+class ODude_Reward_Point_Webhook_Manager {
 
     /**
      * Get target delivery URL for points awarding
      */
     private static function get_award_url() {
-        $api_url    = get_option( 'universal_reward_api_url' );
-        $secret_key = get_option( 'universal_reward_secret_key' );
+        $api_url    = get_option( 'odude_reward_point_api_url' );
+        $secret_key = get_option( 'odude_reward_point_secret_key' );
         if ( ! $api_url || ! $secret_key ) {
             return '';
         }
@@ -25,8 +25,8 @@ class Universal_Reward_Webhook_Manager {
      * Get target delivery URL for points deduction (redeem)
      */
     private static function get_redeem_url() {
-        $api_url    = get_option( 'universal_reward_api_url' );
-        $secret_key = get_option( 'universal_reward_secret_key' );
+        $api_url    = get_option( 'odude_reward_point_api_url' );
+        $secret_key = get_option( 'odude_reward_point_secret_key' );
         if ( ! $api_url || ! $secret_key ) {
             return '';
         }
@@ -34,10 +34,10 @@ class Universal_Reward_Webhook_Manager {
     }
 
     /**
-     * Delete old legacy webhook stored under universal_reward_wc_webhook_id
+     * Delete old legacy webhook stored under odude_reward_point_wc_webhook_id
      */
     private static function delete_legacy_webhook() {
-        $legacy_id = get_option( 'universal_reward_wc_webhook_id' );
+        $legacy_id = get_option( 'odude_reward_point_wc_webhook_id' );
         if ( $legacy_id ) {
             if ( class_exists( 'WC_Webhook' ) ) {
                 try {
@@ -49,7 +49,7 @@ class Universal_Reward_Webhook_Manager {
                     // Ignore
                 }
             }
-            delete_option( 'universal_reward_wc_webhook_id' );
+            delete_option( 'odude_reward_point_wc_webhook_id' );
         }
     }
 
@@ -61,7 +61,7 @@ class Universal_Reward_Webhook_Manager {
             return false;
         }
 
-        $secret_key = get_option( 'universal_reward_secret_key' );
+        $secret_key = get_option( 'odude_reward_point_secret_key' );
         if ( empty( $secret_key ) ) {
             return false;
         }
@@ -84,7 +84,7 @@ class Universal_Reward_Webhook_Manager {
         // 1. Award Webhook (order.created)
         $award_url = self::get_award_url();
         if ( ! empty( $award_url ) ) {
-            $existing_award_id = get_option( 'universal_reward_wc_webhook_award_id' );
+            $existing_award_id = get_option( 'odude_reward_point_wc_webhook_award_id' );
             $need_create_award = true;
             if ( $existing_award_id ) {
                 try {
@@ -113,7 +113,7 @@ class Universal_Reward_Webhook_Manager {
                         $need_create_award = false;
                     }
                 } catch ( Exception $e ) {
-                    delete_option( 'universal_reward_wc_webhook_award_id' );
+                    delete_option( 'odude_reward_point_wc_webhook_award_id' );
                 }
             }
 
@@ -128,7 +128,7 @@ class Universal_Reward_Webhook_Manager {
                     $web->set_user_id( $admin_id );
                     $web->set_api_version( 'wp_api_v3' );
                     $web->save();
-                    update_option( 'universal_reward_wc_webhook_award_id', $web->get_id() );
+                    update_option( 'odude_reward_point_wc_webhook_award_id', $web->get_id() );
                 } catch ( Exception $e ) {
                     // Ignore errors
                 }
@@ -136,7 +136,7 @@ class Universal_Reward_Webhook_Manager {
         }
 
         // Delete redeem webhook if it exists, as points deduction (redeem) is processed synchronously during checkout
-        $redeem_id = get_option( 'universal_reward_wc_webhook_redeem_id' );
+        $redeem_id = get_option( 'odude_reward_point_wc_webhook_redeem_id' );
         if ( $redeem_id ) {
             if ( class_exists( 'WC_Webhook' ) ) {
                 try {
@@ -148,7 +148,7 @@ class Universal_Reward_Webhook_Manager {
                     // Ignore
                 }
             }
-            delete_option( 'universal_reward_wc_webhook_redeem_id' );
+            delete_option( 'odude_reward_point_wc_webhook_redeem_id' );
         }
 
         return true;
@@ -160,7 +160,7 @@ class Universal_Reward_Webhook_Manager {
     public static function delete_webhook() {
         self::delete_legacy_webhook();
 
-        $award_id = get_option( 'universal_reward_wc_webhook_award_id' );
+        $award_id = get_option( 'odude_reward_point_wc_webhook_award_id' );
         if ( $award_id && class_exists( 'WC_Webhook' ) ) {
             try {
                 $web = new WC_Webhook( $award_id );
@@ -171,9 +171,9 @@ class Universal_Reward_Webhook_Manager {
                 // Ignore
             }
         }
-        delete_option( 'universal_reward_wc_webhook_award_id' );
+        delete_option( 'odude_reward_point_wc_webhook_award_id' );
 
-        $redeem_id = get_option( 'universal_reward_wc_webhook_redeem_id' );
+        $redeem_id = get_option( 'odude_reward_point_wc_webhook_redeem_id' );
         if ( $redeem_id && class_exists( 'WC_Webhook' ) ) {
             try {
                 $web = new WC_Webhook( $redeem_id );
@@ -184,7 +184,7 @@ class Universal_Reward_Webhook_Manager {
                 // Ignore
             }
         }
-        delete_option( 'universal_reward_wc_webhook_redeem_id' );
+        delete_option( 'odude_reward_point_wc_webhook_redeem_id' );
     }
 
     /**
@@ -195,8 +195,8 @@ class Universal_Reward_Webhook_Manager {
             return;
         }
 
-        $connection_status = get_option( 'universal_reward_connection_status' );
-        $wc_settings       = get_option( 'universal_reward_wc_settings', [] );
+        $connection_status = get_option( 'odude_reward_point_connection_status' );
+        $wc_settings       = get_option( 'odude_reward_point_wc_settings', [] );
         $earning_enabled   = ! empty( $wc_settings['enable_earning'] ) && $wc_settings['enable_earning'] === 'yes';
 
         // If not connected or earning toggle is disabled, delete webhooks

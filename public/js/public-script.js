@@ -1,20 +1,20 @@
 /**
- * Universal Reward Points Ledger - Public Frontend JS Handler
+ * ODude Reward Point - Public Frontend JS Handler
  */
 jQuery(document).ready(function($) {
 
     // Toggle Loyalty Points form slide down/up
-    $(document).on('click', '#universal-reward-toggle-btn', function(e) {
+    $(document).on('click', '#odude-reward-point-toggle-btn', function(e) {
         e.preventDefault();
-        $('.universal-reward-checkout-content').slideToggle(300);
+        $('.odude-reward-point-checkout-content').slideToggle(300);
     });
 
     // Apply Loyalty Points at Checkout
-    $(document).on('click', '#universal-reward-apply-btn', function(e) {
+    $(document).on('click', '#odude-reward-point-apply-btn', function(e) {
         e.preventDefault();
 
         var btn = $(this);
-        var input = $('#universal-reward-points-input');
+        var input = $('#odude-reward-point-points-input');
         var points = parseInt(input.val());
 
         if (isNaN(points) || points <= 0) {
@@ -25,17 +25,17 @@ jQuery(document).ready(function($) {
         btn.prop('disabled', true).text('Applying...');
 
         $.ajax({
-            url: universal_reward_ajax.ajax_url,
+            url: odude_reward_point_ajax.ajax_url,
             type: 'POST',
             data: {
-                action: 'universal_reward_apply_points',
-                security: universal_reward_ajax.nonce,
+                action: 'odude_reward_point_apply_points',
+                security: odude_reward_point_ajax.nonce,
                 points: points
             },
             success: function(response) {
                 if (response.success) {
                     if (response.data && response.data.html) {
-                        $('.universal-reward-checkout-wrapper').replaceWith(response.data.html);
+                        $('.odude-reward-point-checkout-wrapper').replaceWith(response.data.html);
                     }
                     // Trigger native WooCommerce checkout update event
                     $(document.body).trigger('update_checkout');
@@ -52,25 +52,25 @@ jQuery(document).ready(function($) {
     });
 
     // Remove Applied Loyalty Points
-    $(document).on('click', '#universal-reward-remove-btn', function(e) {
+    $(document).on('click', '#odude-reward-point-remove-btn', function(e) {
         e.preventDefault();
 
         var btn = $(this);
         btn.prop('disabled', true).text('Removing...');
 
         $.ajax({
-            url: universal_reward_ajax.ajax_url,
+            url: odude_reward_point_ajax.ajax_url,
             type: 'POST',
             data: {
-                action: 'universal_reward_remove_points',
-                security: universal_reward_ajax.nonce
+                action: 'odude_reward_point_remove_points',
+                security: odude_reward_point_ajax.nonce
             },
             success: function(response) {
                 if (response.success) {
                     if (response.data && response.data.html) {
-                        $('.universal-reward-checkout-wrapper').replaceWith(response.data.html);
+                        $('.odude-reward-point-checkout-wrapper').replaceWith(response.data.html);
                         // Show the content form after removing points so they can apply again
-                        $('.universal-reward-checkout-content').show();
+                        $('.odude-reward-point-checkout-content').show();
                     }
                     // Trigger native WooCommerce checkout update
                     $(document.body).trigger('update_checkout');
@@ -87,11 +87,11 @@ jQuery(document).ready(function($) {
     });
 
     // Sync/Refresh Points and History from Ledger
-    $(document).on('click', '.universal-reward-sync-btn', function(e) {
+    $(document).on('click', '.odude-reward-point-sync-btn', function(e) {
         e.preventDefault();
 
         var btn = $(this);
-        var icon = btn.find('.universal-reward-sync-icon');
+        var icon = btn.find('.odude-reward-point-sync-icon');
 
         if (btn.hasClass('loading')) {
             return;
@@ -101,11 +101,11 @@ jQuery(document).ready(function($) {
         icon.addClass('spinning');
 
         $.ajax({
-            url: universal_reward_ajax.ajax_url,
+            url: odude_reward_point_ajax.ajax_url,
             type: 'POST',
             data: {
-                action: 'universal_reward_sync_customer_data',
-                security: universal_reward_ajax.nonce
+                action: 'odude_reward_point_sync_customer_data',
+                security: odude_reward_point_ajax.nonce
             },
             success: function(response) {
                 btn.removeClass('loading');
@@ -113,10 +113,10 @@ jQuery(document).ready(function($) {
 
                 if (response.success) {
                     // Update all balance indicators on page
-                    $('.universal-reward-points-balance').text(response.data.balance);
+                    $('.odude-reward-point-points-balance').text(response.data.balance);
                     
                     // Update history table body
-                    $('.universal-reward-history-table tbody').html(response.data.history_html);
+                    $('.odude-reward-point-history-table tbody').html(response.data.history_html);
                 } else {
                     alert(response.data.message || 'Failed to sync data.');
                 }

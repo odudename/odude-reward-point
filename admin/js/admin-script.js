@@ -1,5 +1,5 @@
 /**
- * Universal Reward Points Ledger - Admin JS Orchestrator
+ * ODude Reward Point - Admin JS Orchestrator
  */
 jQuery(document).ready(function($) {
 
@@ -19,11 +19,11 @@ jQuery(document).ready(function($) {
         $(target).addClass('active');
 
         // Store active tab in local storage to keep state across reloads
-        localStorage.setItem('universal_reward_active_tab', target);
+        localStorage.setItem('odude_reward_point_active_tab', target);
     });
 
     // Restore active tab from local storage
-    var activeTab = localStorage.getItem('universal_reward_active_tab');
+    var activeTab = localStorage.getItem('odude_reward_point_active_tab');
     if (activeTab && $('.nav-tab-wrapper a[href="' + activeTab + '"]').length > 0) {
         $('.nav-tab-wrapper a[href="' + activeTab + '"]').trigger('click');
     }
@@ -56,11 +56,11 @@ jQuery(document).ready(function($) {
         $('<span class="wpreward-spinner"></span>').insertAfter(btn);
 
         $.ajax({
-            url: universal_reward_admin_ajax.ajax_url,
+            url: odude_reward_point_admin_ajax.ajax_url,
             type: 'POST',
             data: {
-                action: 'universal_reward_verify_connection',
-                security: universal_reward_admin_ajax.nonce,
+                action: 'odude_reward_point_verify_connection',
+                security: odude_reward_point_admin_ajax.nonce,
                 api_url: $('#wizard_api_url').val(),
                 secret_key: $('#wizard_secret_key').val()
             },
@@ -96,11 +96,11 @@ jQuery(document).ready(function($) {
         btn.prop('disabled', true).text('Disconnecting...');
 
         $.ajax({
-            url: universal_reward_admin_ajax.ajax_url,
+            url: odude_reward_point_admin_ajax.ajax_url,
             type: 'POST',
             data: {
-                action: 'universal_reward_disconnect',
-                security: universal_reward_admin_ajax.nonce
+                action: 'odude_reward_point_disconnect',
+                security: odude_reward_point_admin_ajax.nonce
             },
             success: function(response) {
                 if (response.success) {
@@ -123,11 +123,11 @@ jQuery(document).ready(function($) {
         $('<span class="wpreward-spinner"></span>').insertAfter(btn);
 
         $.ajax({
-            url: universal_reward_admin_ajax.ajax_url,
+            url: odude_reward_point_admin_ajax.ajax_url,
             type: 'POST',
             data: {
-                action: 'universal_reward_sync_stats',
-                security: universal_reward_admin_ajax.nonce
+                action: 'odude_reward_point_sync_stats',
+                security: odude_reward_point_admin_ajax.nonce
             },
             success: function(response) {
                 $('.wpreward-spinner').remove();
@@ -190,11 +190,11 @@ jQuery(document).ready(function($) {
         $('<span class="wpreward-spinner"></span>').insertAfter(btn);
 
         var formData = form.serializeArray();
-        formData.push({ name: 'action', value: 'universal_reward_save_settings' });
-        formData.push({ name: 'security', value: universal_reward_admin_ajax.nonce });
+        formData.push({ name: 'action', value: 'odude_reward_point_save_settings' });
+        formData.push({ name: 'security', value: odude_reward_point_admin_ajax.nonce });
 
         $.ajax({
-            url: universal_reward_admin_ajax.ajax_url,
+            url: odude_reward_point_admin_ajax.ajax_url,
             type: 'POST',
             data: formData,
             success: function(response) {
