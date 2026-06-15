@@ -1,6 +1,6 @@
 === ODude Reward Point ===
-Contributors: odude, odudedevelopers
-Tags: loyalty, points, rewards, woocommerce, loyalty points, customer loyalty, user rewards
+Contributors: odude
+Tags: loyalty, points, rewards, woocommerce, user rewards
 Requires at least: 5.8
 Tested up to: 7.0
 Stable tag: 1.0.0

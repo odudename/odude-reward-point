@@ -265,3 +265,34 @@
 @keyframes wpreward-spin {
     to { transform: rotate(360deg); }
 }
+
+/* Info Box / Registration Guide */
+.wpreward-info-box {
+    background: #f5f3ff;
+    border-left: 4px solid #4f46e5;
+    padding: 16px 20px;
+    border-radius: 8px;
+    margin-bottom: 24px;
+    font-size: 13.5px;
+    line-height: 1.5;
+    color: #4f46e5;
+}
+.wpreward-info-box p {
+    margin: 0 0 6px 0;
+}
+.wpreward-info-box p:last-child {
+    margin-bottom: 0;
+}
+.wpreward-info-box strong {
+    color: #4338ca;
+    font-weight: 600;
+}
+.wpreward-info-box a {
+    color: #4f46e5;
+    text-decoration: underline;
+    font-weight: 600;
+}
+.wpreward-info-box a:hover {
+    color: #4338ca;
+    text-decoration: none;
+}

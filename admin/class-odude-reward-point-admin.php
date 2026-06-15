@@ -220,6 +220,27 @@ class ODude_Reward_Point_Admin {
                     <h2><?php esc_html_e( 'Link your ODude Reward Point Account', 'odude-reward-point' ); ?></h2>
                     <p class="description"><?php esc_html_e( 'Configure the backend Host URL and enter your merchant Secret Key to connect your store with the Loyalty Ledger.', 'odude-reward-point' ); ?></p>
                     
+                    <div class="wpreward-info-box">
+                        <p><strong><?php esc_html_e( 'Don\'t have an ODude account?', 'odude-reward-point' ); ?></strong></p>
+                        <p>
+                            <?php 
+                            printf(
+                                wp_kses(
+                                    // translators: %s: ODude Points registration URL.
+                                    __( 'If you do not have an ODude Name for your company, you can <a href="%s" target="_blank">register for free at point.odude.com</a> to get a free ODude Name and retrieve your required Secret Key.', 'odude-reward-point' ),
+                                    [
+                                        'a' => [
+                                            'href'   => [],
+                                            'target' => [],
+                                        ],
+                                    ]
+                                ),
+                                esc_url( 'https://point.odude.com/' )
+                            ); 
+                            ?>
+                        </p>
+                    </div>
+
                     <form id="wpreward-connection-form">
                         <table class="form-table">
                             <tr>
