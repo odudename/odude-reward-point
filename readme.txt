@@ -33,7 +33,7 @@ Turn one-time shoppers into loyal customers:
 ### 🌐 A Truly Universal Reward Network
 This plugin is more than just a points ledger—it connects you to a truly universal loyalty network:
 * **For Store Owners:** Manage advanced rules, campaigns, and stats through the remote platform at [point.odude.com](https://point.odude.com/).
-* **For Customers:** Shoppers can access their own dedicated portal at `name.odude.com` to check balances and transaction histories across different sites.
+* **For Customers:** Shoppers can access their own dedicated portal at [name.odude.com](https://name.odude.com/) to check balances and transaction histories across different sites.
 * **Mobile App Integration:** Customers can download the mobile app to view their points in real-time and get instant push notifications whenever they earn points at your store.
 
 ### ⚡ Lightning Fast & Secure
@@ -67,8 +67,8 @@ Yes! The plugin stores points details locally on your site using smart caching s
 == Screenshots ==
 
 1. **Simple Connection Screen** - Just enter your key and connect.
-2. **Admin Dashboard** - See your stats at a glance.
-3. **WooCommerce Rewards Rules** - Easily set how points are earned and redeemed.
+2. **WooCommerce & WordPress Rewards Rules** - Easily set how points are earned and redeemed.
+3. **Admin Dashboard** - See your stats at a glance.
 
 == Changelog ==
 
