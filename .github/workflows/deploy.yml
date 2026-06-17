@@ -2,8 +2,8 @@ name: Deploy to WordPress.org
 
 on:
   push:
-    branches:
-      - main
+    tags:
+      - '*'
 
 jobs:
   deploy:
@@ -12,56 +12,10 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Deploy to WordPress SVN
+      - name: WordPress Plugin Deploy
+        uses: 10up/action-wordpress-plugin-deploy@stable
         env:
           SVN_USERNAME: ${{ secrets.SVN_USERNAME }}
           SVN_PASSWORD: ${{ secrets.SVN_PASSWORD }}
-        run: |
-          # 1. Get plugin version from README.txt
-          VERSION=$(grep -i "Stable tag:" README.txt | head -n 1 | sed -E 's/.*Stable tag:\s*//I' | tr -d '\r')
-          echo "Deploying version: $VERSION"
-
-          # 2. SVN Repository URL
-          SVN_URL="https://plugins.svn.wordpress.org/odude-reward-point"
-
-          # 3. Checkout empty SVN repo structure to save bandwidth
-          svn co --username "$SVN_USERNAME" --password "$SVN_PASSWORD" --non-interactive --trust-server-cert-credentials --depth empty "$SVN_URL" svn-repo
-          cd svn-repo
-
-          # 4. Update trunk and assets directories
-          svn update --username "$SVN_USERNAME" --password "$SVN_PASSWORD" --non-interactive --trust-server-cert-credentials --set-depth infinity trunk
-          svn update --username "$SVN_USERNAME" --password "$SVN_PASSWORD" --non-interactive --trust-server-cert-credentials --set-depth infinity assets
-
-          # 5. Check if version tag directory already exists in SVN
-          TAG_EXISTS=false
-          if svn list --username "$SVN_USERNAME" --password "$SVN_PASSWORD" --non-interactive --trust-server-cert-credentials "$SVN_URL/tags/$VERSION" >/dev/null 2>&1; then
-            TAG_EXISTS=true
-            echo "Tag $VERSION already exists in SVN."
-            svn update --username "$SVN_USERNAME" --password "$SVN_PASSWORD" --non-interactive --trust-server-cert-credentials --set-depth infinity "tags/$VERSION"
-          fi
-
-          # 6. Sync files from Git workspace to SVN trunk (respecting .distignore)
-          echo "Syncing files to SVN trunk..."
-          rsync -rc --delete --exclude-from=../.distignore ../ ./trunk/
-
-          # 7. Sync assets
-          if [ -d "../assets" ]; then
-            echo "Syncing assets..."
-            rsync -rc --delete ../assets/ ./assets/
-          fi
-
-          # 8. Create and sync SVN tag if it's a new version
-          if [ "$TAG_EXISTS" = "false" ]; then
-            echo "Creating SVN tag $VERSION..."
-            mkdir -p "tags/$VERSION"
-            rsync -rc --exclude-from=../.distignore ../ ./tags/$VERSION/
-          fi
-
-          # 9. Stage added and deleted files in SVN
-          echo "Staging changes in SVN..."
-          svn status | grep '^\?' | sed 's/? *//' | xargs -I {} svn add --force "{}"
-          svn status | grep '^\!' | sed 's/! *//' | xargs -I {} svn delete "{}"
-
-          # 10. Commit changes to WordPress SVN
-          echo "Committing to WordPress SVN..."
-          svn commit --username "$SVN_USERNAME" --password "$SVN_PASSWORD" --non-interactive --trust-server-cert-credentials -m "Deploy version $VERSION from GitHub Actions"
+          SLUG: odude-reward-point
+          ASSETS_DIR: assets
