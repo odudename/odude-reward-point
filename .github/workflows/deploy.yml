@@ -26,3 +26,4 @@ jobs:
           SLUG: odude-reward-point
           ASSETS_DIR: assets
           VERSION: ${{ steps.get_version.outputs.version }}
+          GITHUB_REF: refs/tags/${{ steps.get_version.outputs.version }}
