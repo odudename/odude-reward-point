@@ -3,7 +3,7 @@
  * Plugin Name:       ODude Reward Point
  * Plugin URI:        https://point.odude.com/
  * Description:       Bridges WordPress and WooCommerce with the ODude Reward Point Universal Loyalty Ledger.
- * Version:           1.0.0
+ * Version:           1.0.1
  * Author:            ODude Developers
  * Author URI:        https://odude.com/
  * License:           GPL-2.0+
@@ -16,7 +16,7 @@ if ( ! defined( 'WPINC' ) ) {
 }
 
 // Define plugin constants
-define( 'ODUDE_REWARD_POINT_VERSION', '1.0.0' );
+define( 'ODUDE_REWARD_POINT_VERSION', '1.0.1' );
 define( 'ODUDE_REWARD_POINT_PATH', plugin_dir_path( __FILE__ ) );
 define( 'ODUDE_REWARD_POINT_URL', plugin_dir_url( __FILE__ ) );
 define( 'ODUDE_REWARD_POINT_BASENAME', plugin_basename( __FILE__ ) );
