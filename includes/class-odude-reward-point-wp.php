@@ -13,10 +13,13 @@ class ODude_Reward_Point_WP {
         // 1. User Registration Hook
         add_action( 'user_register', [ $this, 'reward_registration' ] );
 
-        // 2. Comment Approval Hook
+        // 2. Comment Approval Hook (for comments approved later)
         add_action( 'transition_comment_status', [ $this, 'reward_comment' ], 10, 3 );
 
-        // 3. Daily Login Hook
+        // 3. New Comment Submission Hook (for auto-approved comments on submission)
+        add_action( 'comment_post', [ $this, 'reward_new_comment' ], 10, 3 );
+
+        // 4. Daily Login Hook
         add_action( 'wp_login', [ $this, 'reward_daily_login' ], 10, 2 );
     }
 
@@ -83,14 +86,20 @@ class ODude_Reward_Point_WP {
     }
 
     /**
-     * Reward approved comments with rate limiting
+     * Helper to process comment rewards with idempotency check
      */
-    public function reward_comment( $new_status, $old_status, $comment ) {
+    private function process_comment_reward( $comment ) {
         if ( ! $this->is_active() ) {
             return;
         }
 
-        if ( $new_status !== 'approved' ) {
+        $comment_id = intval( $comment->comment_ID );
+        if ( $comment_id <= 0 ) {
+            return;
+        }
+
+        // Idempotency check: prevent double rewarding
+        if ( get_comment_meta( $comment_id, '_odude_reward_point_awarded', true ) === 'yes' ) {
             return;
         }
 
@@ -135,9 +144,62 @@ class ODude_Reward_Point_WP {
             return;
         }
 
+        // Mark as rewarded *before* making the API request to prevent race conditions
+        update_comment_meta( $comment_id, '_odude_reward_point_awarded', 'yes' );
+
         // translators: %d: post ID.
         $remarks = sprintf( __( 'Reward for comment on post #%d', 'odude-reward-point' ), $comment->comment_post_ID );
-        $this->process_award( $user_id, $points, $remarks );
+        
+        // Award points
+        $user = get_userdata( $user_id );
+        if ( ! $user ) {
+            return;
+        }
+
+        $api = new ODude_Reward_Point_API_Client();
+        $response = $api->award_points( $user->user_email, '', 0, $points, $remarks );
+
+        if ( empty( $response['success'] ) ) {
+            // Revert reward flag if the API call failed
+            delete_comment_meta( $comment_id, '_odude_reward_point_awarded' );
+            return;
+        }
+
+        // Sync local cache
+        require_once ODUDE_REWARD_POINT_PATH . 'includes/class-odude-reward-point-core.php';
+        ODude_Reward_Point_Cache_Manager::purge_customer_cache( $user_id );
+
+        // Update local user meta cache
+        $balance_response = $api->get_customer_balance( $user->user_email );
+        if ( ! empty( $balance_response['success'] ) && isset( $balance_response['customer']['points_balance'] ) ) {
+            ODude_Reward_Point_Cache_Manager::update_local_customer_balance(
+                $user_id,
+                $balance_response['customer']['points_balance']
+            );
+        }
+        ODude_Reward_Point_Cache_Manager::purge_stats_cache();
+    }
+
+    /**
+     * Reward approved comments (transition status change)
+     */
+    public function reward_comment( $new_status, $old_status, $comment ) {
+        if ( $new_status === 'approved' ) {
+            $this->process_comment_reward( $comment );
+        }
+    }
+
+    /**
+     * Reward new comments (fired immediately on comment creation)
+     */
+    public function reward_new_comment( $comment_id, $comment_approved, $commentdata ) {
+        // '1' or 1 means approved
+        if ( $comment_approved === 1 || $comment_approved === '1' ) {
+            $comment = get_comment( $comment_id );
+            if ( $comment ) {
+                $this->process_comment_reward( $comment );
+            }
+        }
     }
 
     /**

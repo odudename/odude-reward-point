@@ -13,12 +13,13 @@ class ODude_Reward_Point_Webhook_Manager {
      * Get target delivery URL for points awarding
      */
     private static function get_award_url() {
-        $api_url    = get_option( 'odude_reward_point_api_url' );
-        $secret_key = get_option( 'odude_reward_point_secret_key' );
-        if ( ! $api_url || ! $secret_key ) {
+        $api_url  = get_option( 'odude_reward_point_api_url' );
+        $profile  = get_option( 'odude_reward_point_provider_profile', [] );
+        $merchant = ! empty( $profile['odude_name'] ) ? $profile['odude_name'] : '';
+        if ( ! $api_url || ! $merchant ) {
             return '';
         }
-        return add_query_arg( 'secret_key', $secret_key, untrailingslashit( $api_url ) . '/award' );
+        return add_query_arg( 'merchant', $merchant, untrailingslashit( $api_url ) . '/award' );
     }
 
     /**

@@ -246,8 +246,8 @@ class ODude_Reward_Point_Admin {
                             <tr>
                                 <th scope="row"><label for="wizard_api_url"><?php esc_html_e( 'API Host Endpoint', 'odude-reward-point' ); ?></label></th>
                                 <td>
-                                    <input type="url" id="wizard_api_url" class="regular-text" value="<?php echo esc_attr( $api_url ); ?>" required />
-                                    <p class="description"><?php esc_html_e( 'Target API path, e.g. https://point.odude.com/api/v1', 'odude-reward-point' ); ?></p>
+                                    <input type="url" id="wizard_api_url" class="regular-text" placeholder="https://point.odude.com/api/v1" value="<?php echo esc_attr( $api_url ); ?>" required />
+                                    <p class="description"><?php esc_html_e( 'Enter the API Base URL displayed in your ODude settings page (e.g. https://point.odude.com/api/v1).', 'odude-reward-point' ); ?></p>
                                 </td>
                             </tr>
                             <tr>
