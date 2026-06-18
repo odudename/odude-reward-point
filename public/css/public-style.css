@@ -1,18 +1,18 @@
 /**
- * WP Reward - Public Frontend Styling
+ * ODude Reward Point - Public Frontend Styling
  */
 
 /* Checkout Loyalty Widget */
-.wpreward-checkout-wrapper {
+.odude-reward-point-checkout-wrapper {
     margin-bottom: 25px;
     width: 100%;
 }
 
-.wpreward-checkout-toggle .woocommerce-info {
+.odude-reward-point-checkout-toggle .woocommerce-info {
     margin-bottom: 0 !important;
 }
 
-.wpreward-checkout-content {
+.odude-reward-point-checkout-content {
     background: #f8fafc;
     border: 1px solid #cbd5e1;
     border-radius: 8px;
@@ -21,18 +21,18 @@
     width: 100%;
 }
 
-.wpreward-checkout-form-inner {
+.odude-reward-point-checkout-form-inner {
     display: flex;
     flex-direction: column;
     gap: 12px;
     width: 100%;
 }
 
-.wpreward-form-row {
+.odude-reward-point-form-row {
     width: 100%;
 }
 
-.wpreward-info-row {
+.odude-reward-point-info-row {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -40,29 +40,29 @@
     color: #475569;
 }
 
-.wpreward-balance-info strong {
+.odude-reward-point-balance-info strong {
     color: #0f172a;
 }
 
-.wpreward-helper-text {
+.odude-reward-point-helper-text {
     font-size: 13px;
     color: #64748b;
     font-weight: 500;
 }
 
-.wpreward-input-row {
+.odude-reward-point-input-row {
     display: flex;
     align-items: center;
 }
 
-.wpreward-input-group {
+.odude-reward-point-input-group {
     display: flex;
     align-items: center;
     gap: 12px;
     width: 100%;
 }
 
-.wpreward-input-label {
+.odude-reward-point-input-label {
     font-weight: 600;
     font-size: 14px;
     color: #334155;
@@ -70,7 +70,7 @@
     white-space: nowrap;
 }
 
-#wpreward-points-input {
+#odude-reward-point-points-input {
     max-width: 150px;
     padding: 8px 12px;
     border: 1px solid #cbd5e1;
@@ -82,7 +82,7 @@
     margin: 0;
 }
 
-#wpreward-apply-btn {
+#odude-reward-point-apply-btn {
     height: 40px;
     background: #4f46e5 !important;
     color: #ffffff !important;
@@ -96,12 +96,12 @@
     margin: 0 !important;
 }
 
-#wpreward-apply-btn:hover {
+#odude-reward-point-apply-btn:hover {
     background: #4338ca !important;
 }
 
 /* For applied state */
-.wpreward-checkout-form-inner.wpreward-applied {
+.odude-reward-point-checkout-form-inner.odude-reward-point-applied {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
@@ -109,12 +109,12 @@
     gap: 12px;
 }
 
-.wpreward-applied-info {
+.odude-reward-point-applied-info {
     font-size: 14px;
     color: #065f46;
 }
 
-#wpreward-remove-btn {
+#odude-reward-point-remove-btn {
     height: 38px;
     background: #ef4444 !important;
     color: #ffffff !important;
@@ -129,11 +129,11 @@
     margin: 0 !important;
 }
 
-#wpreward-remove-btn:hover {
+#odude-reward-point-remove-btn:hover {
     background: #dc2626 !important;
 }
 
-.wpreward-checkout-notice {
+.odude-reward-point-checkout-notice {
     padding: 12px 20px;
     border-radius: 8px;
     border-left: 4px solid #3b82f6;
@@ -143,7 +143,7 @@
     margin-bottom: 20px;
 }
 
-.wpreward-checkout-notice a {
+.odude-reward-point-checkout-notice a {
     color: #1d4ed8;
     text-decoration: underline;
     font-weight: 600;
@@ -151,60 +151,60 @@
 
 /* Responsive adjustments */
 @media (max-width: 768px) {
-    .wpreward-info-row {
+    .odude-reward-point-info-row {
         flex-direction: column;
         align-items: flex-start;
         gap: 6px;
     }
     
-    .wpreward-input-group {
+    .odude-reward-point-input-group {
         flex-direction: column;
         align-items: stretch;
         gap: 8px;
     }
     
-    #wpreward-points-input {
+    #odude-reward-point-points-input {
         max-width: 100%;
         width: 100%;
     }
     
-    .wpreward-checkout-form-inner.wpreward-applied {
+    .odude-reward-point-checkout-form-inner.odude-reward-point-applied {
         flex-direction: column;
         align-items: flex-start;
     }
 }
 
 /* User Profile Account Shortcode Table */
-.wpreward-history-container {
+.odude-reward-point-history-container {
     margin: 30px 0;
 }
 
-.wpreward-history-title {
+.odude-reward-point-history-title {
     margin: 0 0 15px 0;
     font-size: 20px;
     color: #0f172a;
 }
 
-.wpreward-history-table {
+.odude-reward-point-history-table {
     width: 100%;
     border-collapse: collapse;
     margin-bottom: 20px;
 }
 
-.wpreward-history-table th,
-.wpreward-history-table td {
+.odude-reward-point-history-table th,
+.odude-reward-point-history-table td {
     padding: 12px 16px;
     text-align: left;
     border-bottom: 1px solid #e2e8f0;
 }
 
-.wpreward-history-table th {
+.odude-reward-point-history-table th {
     background-color: #f8fafc;
     font-weight: 600;
     color: #475569;
 }
 
-.wpreward-badge {
+.odude-reward-point-badge {
     display: inline-block;
     padding: 3px 8px;
     border-radius: 10px;
@@ -212,26 +212,26 @@
     font-weight: 600;
 }
 
-.wpreward-badge.wpreward-tx-award {
+.odude-reward-point-badge.odude-reward-point-tx-award {
     background-color: #ecfdf5;
     color: #047857;
 }
 
-.wpreward-badge.wpreward-tx-redeem {
+.odude-reward-point-badge.odude-reward-point-tx-redeem {
     background-color: #fff7ed;
     color: #c2410c;
 }
 
-.wpreward-tx-points.wpreward-tx-award {
+.odude-reward-point-tx-points.odude-reward-point-tx-award {
     color: #059669;
 }
 
-.wpreward-tx-points.wpreward-tx-redeem {
+.odude-reward-point-tx-points.odude-reward-point-tx-redeem {
     color: #ea580c;
 }
 
-.wpreward-no-transactions,
-.wpreward-login-prompt {
+.odude-reward-point-no-transactions,
+.odude-reward-point-login-prompt {
     padding: 16px;
     background-color: #f1f5f9;
     border-radius: 8px;
@@ -240,7 +240,7 @@
 }
 
 /* Sync Button Styles */
-.wpreward-history-header {
+.odude-reward-point-history-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -249,11 +249,11 @@
     gap: 12px;
 }
 
-.wpreward-history-header .wpreward-history-title {
+.odude-reward-point-history-header .odude-reward-point-history-title {
     margin: 0;
 }
 
-.wpreward-sync-btn {
+.odude-reward-point-sync-btn {
     background: #4f46e5 !important;
     color: #ffffff !important;
     border: none !important;
@@ -271,23 +271,25 @@
     box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05) !important;
 }
 
-.wpreward-sync-btn:hover {
+.odude-reward-point-sync-btn:hover {
     background: #4338ca !important;
 }
 
-.wpreward-sync-btn:active {
+.odude-reward-point-sync-btn:active {
     transform: scale(0.96) !important;
 }
 
-.wpreward-sync-icon {
+.odude-reward-point-sync-icon {
     transition: transform 0.2s ease;
+    transform-origin: center;
 }
 
-.wpreward-sync-icon.spinning {
-    animation: wpreward-spin 1s linear infinite;
+.odude-reward-point-sync-icon.spinning {
+    animation: odude-reward-point-spin 1s linear infinite;
+    transform-origin: center;
 }
 
-@keyframes wpreward-spin {
+@keyframes odude-reward-point-spin {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
 }

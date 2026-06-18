@@ -241,4 +241,74 @@ jQuery(document).ready(function($) {
             $('.wpreward-wc-redemption-dependent').fadeOut(200);
         }
     });
+
+    // 7. Test Points Award & Redeem AJAX
+    function runTestTransaction(actionName, btnId) {
+        var email = $('#test_user_email').val().trim();
+        var points = $('#test_points_amount').val().trim();
+        var remarks = $('#test_remarks').val().trim();
+        
+        if (!email || !points) {
+            alert('Please fill in both email and points fields.');
+            return;
+        }
+
+        var btn = $('#' + btnId);
+        var originalText = btn.text();
+        btn.prop('disabled', true).text('Processing...');
+        $('<span class="wpreward-spinner"></span>').insertAfter(btn);
+
+        var resultContainer = $('#wpreward-admin-test-result');
+        var resultPre = resultContainer.find('pre');
+        resultContainer.hide();
+
+        $.ajax({
+            url: odude_reward_point_admin_ajax.ajax_url,
+            type: 'POST',
+            data: {
+                action: actionName,
+                security: odude_reward_point_admin_ajax.nonce,
+                email: email,
+                points: points,
+                remarks: remarks
+            },
+            success: function(response) {
+                $('.wpreward-spinner').remove();
+                btn.prop('disabled', false).text(originalText);
+
+                resultPre.text(JSON.stringify(response, null, 4));
+                resultContainer.fadeIn(200);
+
+                if (response.success) {
+                    showFeedback(response.data.message, true);
+                } else {
+                    showFeedback(response.data.message || 'Error occurred.', false);
+                }
+            },
+            error: function(xhr, status, error) {
+                $('.wpreward-spinner').remove();
+                btn.prop('disabled', false).text(originalText);
+                
+                var errorResponse = {
+                    status: xhr.status,
+                    statusText: xhr.statusText,
+                    error: error,
+                    responseText: xhr.responseText
+                };
+                resultPre.text(JSON.stringify(errorResponse, null, 4));
+                resultContainer.fadeIn(200);
+                showFeedback('Network error during transaction test.', false);
+            }
+        });
+    }
+
+    $('#wpreward-admin-test-award-btn').on('click', function(e) {
+        e.preventDefault();
+        runTestTransaction('odude_reward_point_admin_test_award', 'wpreward-admin-test-award-btn');
+    });
+
+    $('#wpreward-admin-test-redeem-btn').on('click', function(e) {
+        e.preventDefault();
+        runTestTransaction('odude_reward_point_admin_test_redeem', 'wpreward-admin-test-redeem-btn');
+    });
 });

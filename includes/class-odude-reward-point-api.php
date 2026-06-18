@@ -77,11 +77,12 @@ class ODude_Reward_Point_API_Client {
 	 */
 	public function verify_key( $temp_key = '' ) {
 		$key = ! empty( $temp_key ) ? $temp_key : $this->secret_key;
-		$url = add_query_arg( 'secret_key', $key, $this->api_url . '/verify' );
+		$url = $this->api_url . '/verify';
 
 		$this->log( 'Verifying Key', [ 'url' => $url ] );
 
 		$response = wp_remote_get( $url, [
+			'headers' => $this->get_headers( $key ),
 			'timeout' => 15,
 		] );
 
@@ -107,6 +108,7 @@ class ODude_Reward_Point_API_Client {
 			'phone'        => $phone,
 			'amount'       => floatval( $amount ),
 			'website_name' => get_bloginfo( 'name' ),
+			'remarks'      => $remarks,
 		];
 
 		if ( $deserved_point !== null ) {
@@ -139,13 +141,13 @@ class ODude_Reward_Point_API_Client {
 		$url = $this->api_url . '/customer';
 		$params = [
 			'query'      => $identifier,
-			'secret_key' => $this->secret_key,
 		];
 
 		$request_url = add_query_arg( $params, $url );
 		$this->log( 'Fetching Customer Balance', [ 'url' => $request_url ] );
 
 		$response = wp_remote_get( $request_url, [
+			'headers' => $this->get_headers(),
 			'timeout' => 10,
 		] );
 
@@ -196,11 +198,12 @@ class ODude_Reward_Point_API_Client {
 	 * 5. Get Provider Stats
 	 */
 	public function get_provider_stats() {
-		$url = add_query_arg( 'secret_key', $this->secret_key, $this->api_url . '/stats' );
+		$url = $this->api_url . '/stats';
 
 		$this->log( 'Fetching Provider Stats', [ 'url' => $url ] );
 
 		$response = wp_remote_get( $url, [
+			'headers' => $this->get_headers(),
 			'timeout' => 15,
 		] );
 

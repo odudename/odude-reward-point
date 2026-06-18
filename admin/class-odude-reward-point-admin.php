@@ -18,6 +18,8 @@ class ODude_Reward_Point_Admin {
         add_action( 'wp_ajax_odude_reward_point_sync_stats', [ $this, 'ajax_sync_stats' ] );
         add_action( 'wp_ajax_odude_reward_point_disconnect', [ $this, 'ajax_disconnect' ] );
         add_action( 'wp_ajax_odude_reward_point_save_settings', [ $this, 'ajax_save_settings' ] );
+        add_action( 'wp_ajax_odude_reward_point_admin_test_award', [ $this, 'ajax_admin_test_award' ] );
+        add_action( 'wp_ajax_odude_reward_point_admin_test_redeem', [ $this, 'ajax_admin_test_redeem' ] );
     }
 
     /**
@@ -269,6 +271,7 @@ class ODude_Reward_Point_Admin {
                     <a href="#tab-dashboard" class="nav-tab nav-tab-active"><?php esc_html_e( 'Dashboard Stats', 'odude-reward-point' ); ?></a>
                     <a href="#tab-wordpress" class="nav-tab"><?php esc_html_e( 'WordPress Rewards', 'odude-reward-point' ); ?></a>
                     <a href="#tab-woocommerce" class="nav-tab"><?php esc_html_e( 'WooCommerce Rules', 'odude-reward-point' ); ?></a>
+                    <a href="#tab-test-points" class="nav-tab"><?php esc_html_e( 'Direct Point Transfer', 'odude-reward-point' ); ?></a>
                 </h2>
 
                 <!-- TAB 1: DASHBOARD STATS -->
@@ -480,8 +483,160 @@ class ODude_Reward_Point_Admin {
                         </form>
                     <?php endif; ?>
                 </div>
+
+                <!-- TAB 4: DIRECT POINT TRANSFER -->
+                <div id="tab-test-points" class="wpreward-tab-content">
+                    <div class="wpreward-card">
+                        <h3><?php esc_html_e( 'Direct Point Transfer', 'odude-reward-point' ); ?></h3>
+                        <p class="description"><?php esc_html_e( 'Award or redeem points directly for any user email address with custom remarks.', 'odude-reward-point' ); ?></p>
+                        
+                        <form id="wpreward-admin-test-form">
+                            <table class="form-table">
+                                <tr>
+                                    <th scope="row"><label for="test_user_email"><?php esc_html_e( 'Target User Email', 'odude-reward-point' ); ?></label></th>
+                                    <td>
+                                        <input type="email" id="test_user_email" class="regular-text" placeholder="user@example.com" required />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th scope="row"><label for="test_points_amount"><?php esc_html_e( 'Points Amount', 'odude-reward-point' ); ?></label></th>
+                                    <td>
+                                        <input type="number" id="test_points_amount" class="small-text" min="1" step="1" placeholder="100" required />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th scope="row"><label for="test_remarks"><?php esc_html_e( 'Remarks / Reason', 'odude-reward-point' ); ?></label></th>
+                                    <td>
+                                        <input type="text" id="test_remarks" class="regular-text" placeholder="e.g. Loyalty bonus, manual adjustment" />
+                                    </td>
+                                </tr>
+                            </table>
+                            <div style="margin-top: 15px;">
+                                <button type="button" id="wpreward-admin-test-award-btn" class="button button-primary"><?php esc_html_e( 'Award Points', 'odude-reward-point' ); ?></button>
+                                <button type="button" id="wpreward-admin-test-redeem-btn" class="button button-secondary" style="margin-left: 10px;"><?php esc_html_e( 'Redeem Points', 'odude-reward-point' ); ?></button>
+                            </div>
+                        </form>
+                        
+                        <div id="wpreward-admin-test-result" style="display:none; margin-top: 24px; padding: 20px; border-radius: 8px; border: 1px solid #cbd5e1; background-color: #f8fafc;">
+                            <h4 style="margin: 0 0 10px 0; color: #0f172a; font-size: 14px; font-weight: 600;"><?php esc_html_e( 'Transaction Output', 'odude-reward-point' ); ?></h4>
+                            <pre style="white-space: pre-wrap; word-break: break-all; margin: 0; padding: 12px; background: #0f172a; color: #38bdf8; border-radius: 6px; font-family: monospace; font-size: 12px; line-height: 1.5;"></pre>
+                        </div>
+                    </div>
+                </div>
             <?php endif; ?>
         </div>
         <?php
+    }
+
+    /**
+     * AJAX action to test award points
+     */
+    public function ajax_admin_test_award() {
+        check_ajax_referer( 'odude-reward-point-admin-nonce', 'security' );
+
+        if ( ! current_user_can( 'manage_options' ) ) {
+            wp_send_json_error( [ 'message' => __( 'Permission denied.', 'odude-reward-point' ) ] );
+        }
+
+        $email   = isset( $_POST['email'] ) ? sanitize_email( wp_unslash( $_POST['email'] ) ) : '';
+        $points  = isset( $_POST['points'] ) ? intval( wp_unslash( $_POST['points'] ) ) : 0;
+        $remarks = isset( $_POST['remarks'] ) ? sanitize_text_field( wp_unslash( $_POST['remarks'] ) ) : '';
+
+        if ( empty( $email ) || ! is_email( $email ) ) {
+            wp_send_json_error( [ 'message' => __( 'A valid email address is required.', 'odude-reward-point' ) ] );
+        }
+
+        if ( $points <= 0 ) {
+            wp_send_json_error( [ 'message' => __( 'Points amount must be greater than zero.', 'odude-reward-point' ) ] );
+        }
+
+        if ( empty( $remarks ) ) {
+            $remarks = __( 'Merchant direct adjustment (Award)', 'odude-reward-point' );
+        }
+
+        $api = new ODude_Reward_Point_API_Client();
+        $response = $api->award_points( $email, '', 0, $points, $remarks );
+
+        if ( ! empty( $response['success'] ) ) {
+            // Update local user cache if user exists
+            $user = get_user_by( 'email', $email );
+            if ( $user ) {
+                ODude_Reward_Point_Cache_Manager::purge_customer_cache( $user->ID );
+                $balance_response = $api->get_customer_balance( $email );
+                if ( ! empty( $balance_response['success'] ) && isset( $balance_response['customer']['points_balance'] ) ) {
+                    ODude_Reward_Point_Cache_Manager::update_local_customer_balance(
+                        $user->ID,
+                        $balance_response['customer']['points_balance']
+                    );
+                }
+            }
+            ODude_Reward_Point_Cache_Manager::purge_stats_cache();
+            wp_send_json_success( [
+                'message' => __( 'Points awarded successfully.', 'odude-reward-point' ),
+                'api_response' => $response
+            ] );
+        } else {
+            $error_msg = ! empty( $response['message'] ) ? $response['message'] : __( 'Failed to award points via API.', 'odude-reward-point' );
+            wp_send_json_error( [
+                'message' => $error_msg,
+                'api_response' => $response
+            ] );
+        }
+    }
+
+    /**
+     * AJAX action to test redeem points
+     */
+    public function ajax_admin_test_redeem() {
+        check_ajax_referer( 'odude-reward-point-admin-nonce', 'security' );
+
+        if ( ! current_user_can( 'manage_options' ) ) {
+            wp_send_json_error( [ 'message' => __( 'Permission denied.', 'odude-reward-point' ) ] );
+        }
+
+        $email   = isset( $_POST['email'] ) ? sanitize_email( wp_unslash( $_POST['email'] ) ) : '';
+        $points  = isset( $_POST['points'] ) ? intval( wp_unslash( $_POST['points'] ) ) : 0;
+        $remarks = isset( $_POST['remarks'] ) ? sanitize_text_field( wp_unslash( $_POST['remarks'] ) ) : '';
+
+        if ( empty( $email ) || ! is_email( $email ) ) {
+            wp_send_json_error( [ 'message' => __( 'A valid email address is required.', 'odude-reward-point' ) ] );
+        }
+
+        if ( $points <= 0 ) {
+            wp_send_json_error( [ 'message' => __( 'Points amount must be greater than zero.', 'odude-reward-point' ) ] );
+        }
+
+        if ( empty( $remarks ) ) {
+            $remarks = __( 'Merchant direct adjustment (Redeem)', 'odude-reward-point' );
+        }
+
+        $api = new ODude_Reward_Point_API_Client();
+        $response = $api->redeem_points( $email, $points, $remarks );
+
+        if ( ! empty( $response['success'] ) ) {
+            // Update local user cache if user exists
+            $user = get_user_by( 'email', $email );
+            if ( $user ) {
+                ODude_Reward_Point_Cache_Manager::purge_customer_cache( $user->ID );
+                $balance_response = $api->get_customer_balance( $email );
+                if ( ! empty( $balance_response['success'] ) && isset( $balance_response['customer']['points_balance'] ) ) {
+                    ODude_Reward_Point_Cache_Manager::update_local_customer_balance(
+                        $user->ID,
+                        $balance_response['customer']['points_balance']
+                    );
+                }
+            }
+            ODude_Reward_Point_Cache_Manager::purge_stats_cache();
+            wp_send_json_success( [
+                'message' => __( 'Points redeemed successfully.', 'odude-reward-point' ),
+                'api_response' => $response
+            ] );
+        } else {
+            $error_msg = ! empty( $response['message'] ) ? $response['message'] : __( 'Failed to redeem points via API.', 'odude-reward-point' );
+            wp_send_json_error( [
+                'message' => $error_msg,
+                'api_response' => $response
+            ] );
+        }
     }
 }
